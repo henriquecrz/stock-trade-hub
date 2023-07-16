@@ -34,7 +34,7 @@ namespace api.Controllers
         public IEnumerable<Stock> Get() => _stockService.Get();
 
         [HttpGet(Name = "GetStockByCode")]
-        public ActionResult<Stock> Get(string code)
+        public ActionResult<Stock> GetByCode(string code)
         {
             code = code.Trim().ToUpper();
             var stock = _stockService.Get(code);

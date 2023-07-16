@@ -14,13 +14,11 @@ namespace api.Services
         private readonly ITransactionService _transactionService;
 
         public MessageService(
-            string rabbitMQHostName,
-            string queueName,
             ILogger<MessageService> logger,
             ITransactionService transactionService)
         {
-            _connectionFactory = new ConnectionFactory() { HostName = rabbitMQHostName };
-            _queueName = queueName;
+            _connectionFactory = new ConnectionFactory() { HostName = "localhost" };
+            _queueName = "transaction";
             _logger = logger;
             _transactionService = transactionService;
 
