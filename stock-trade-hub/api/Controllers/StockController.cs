@@ -1,5 +1,5 @@
 ﻿using api.Models;
-using api.Utils;
+using api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -8,44 +8,22 @@ namespace api.Controllers
     [Route("[controller]/[action]")]
     public class StockController : ControllerBase
     {
-        public static readonly List<Stock> Stocks = new()
-        {
-            new Stock
-            {
-                Code = "STNE",
-                Amount = 100,
-                Price = 69.33m
-            },
-            new Stock
-            {
-                Code = "GOOG",
-                Amount = 100,
-                Price = 117.71m
-            },
-            new Stock
-            {
-                Code = "PGRM",
-                Amount = 100,
-                Price = 132.17m
-            },
-        };
-
         private readonly ILogger<StockController> _logger;
+        private readonly IStockService _stockService;
 
-        public StockController(ILogger<StockController> logger)
+        public StockController(ILogger<StockController> logger, IStockService stockService)
         {
             _logger = logger;
+            _stockService = stockService;
         }
 
         [HttpPost(Name = "CreateStock")]
         public ActionResult<Stock> Create(Stock stock)
         {
-            var exists = Stocks.Any(s => s.Code == stock.Code);
+            var success = _stockService.Create(stock);
 
-            if (!exists)
+            if (success)
             {
-                Stocks.Add(stock);
-
                 return CreatedAtAction(nameof(Get), new { stock.Code }, stock);
             }
 
@@ -53,16 +31,13 @@ namespace api.Controllers
         }
 
         [HttpGet(Name = "GetStocks")]
-        public IEnumerable<Stock> Get()
-        {
-            return Stocks;
-        }
+        public IEnumerable<Stock> Get() => _stockService.Get();
 
         [HttpGet(Name = "GetStockByCode")]
-        public ActionResult<Stock> GetByCode(string code)
+        public ActionResult<Stock> Get(string code)
         {
             code = code.Trim().ToUpper();
-            var stock = Stocks.GetStock(code);
+            var stock = _stockService.Get(code);
 
             if (stock is not null)
             {
@@ -76,14 +51,12 @@ namespace api.Controllers
         public ActionResult<Stock> Update(string code, Stock updatedStock)
         {
             code = code.Trim().ToUpper();
-            var stock = Stocks.GetStock(code);
 
-            if (stock is not null)
+            var success = _stockService.Update(code, updatedStock);
+
+            if (success)
             {
-                stock.Amount = updatedStock.Amount;
-                stock.Price = updatedStock.Price;
-
-                return Ok(stock);
+                return Ok(updatedStock);
             }
 
             return NotFound($"Stock code {code} not found.");
@@ -93,13 +66,12 @@ namespace api.Controllers
         public ActionResult<Stock> Delete(string code)
         {
             code = code.Trim().ToUpper();
-            var stock = GetByCode(code).Value;
 
-            if (stock is not null)
+            var success = _stockService.Remove(code);
+
+            if (success)
             {
-                Stocks.Remove(stock);
-
-                return Ok(stock);
+                return Ok(code);
             }
 
             return NotFound($"Stock code {code} not found.");

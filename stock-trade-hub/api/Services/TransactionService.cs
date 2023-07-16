@@ -1,28 +1,29 @@
-﻿using api.Controllers;
-using api.Models;
+﻿using api.Models;
 using api.Utils;
 
 namespace api.Services
 {
     public class TransactionService : ITransactionService
     {
-        private readonly List<StockBase> wallet;
-        private readonly List<Transaction> transactions;
+        private readonly List<StockBase> _wallet;
+        private readonly List<Transaction> _transactions;
+        private readonly IStockService _stockService;
 
-        public TransactionService()
+        public TransactionService(IStockService stockService)
         {
-            wallet = new();
-            transactions = new();
+            _wallet = new();
+            _transactions = new();
+            _stockService = stockService;
         }
 
         public Transaction Transact(TransactionRequest request)
         {
             var transactionStock = request.Stock;
-            var stock = StockController.Stocks.GetStock(transactionStock.Code);
+            var stock = _stockService.Get(transactionStock.Code);
 
             if (stock is null)
             {
-                return $"Stock code {transactionStock.Code} does not exist."; //BadRequest
+                return CreateTransaction(request, processed: false, $"Stock code {transactionStock.Code} does not exist."); //BadRequest
             }
 
             switch (request.Type)
@@ -31,11 +32,11 @@ namespace api.Services
                     {
                         if (transactionStock.Amount <= stock.Amount)
                         {
-                            var walletStock = wallet.GetStock(transactionStock.Code);
+                            var walletStock = _wallet.GetStock(transactionStock.Code);
 
                             if (walletStock is null)
                             {
-                                wallet.Add(new StockBase()
+                                _wallet.Add(new StockBase()
                                 {
                                     Code = transactionStock.Code,
                                     Amount = transactionStock.Amount
@@ -49,19 +50,22 @@ namespace api.Services
 
                             var transaction = CreateTransaction(request, processed: true, "Transaction processed successfully.");
 
-                            transactions.Add(transaction);
+                            _transactions.Add(transaction);
 
                             return transaction; //CreatedAtAction
                         }
 
-                        return string.Format(
-                            $"The number of stocks to be bought (0) is greater than the available (1).",
-                            transactionStock.Amount,
-                            stock.Amount); //BadRequest
+                        return CreateTransaction(
+                            request,
+                            processed: false,
+                            string.Format(
+                                $"The number of stocks to be bought (0) is greater than the available (1).",
+                                transactionStock.Amount,
+                                stock.Amount)); //BadRequest
                     }
                 case TransactionType.Selling:
                     {
-                        var walletStock = wallet.GetStock(transactionStock.Code);
+                        var walletStock = _wallet.GetStock(transactionStock.Code);
 
                         if (walletStock is not null)
                         {
@@ -70,29 +74,28 @@ namespace api.Services
 
                             if (walletStock.Amount == 0)
                             {
-                                wallet.Remove(walletStock);
+                                _wallet.Remove(walletStock);
                             }
 
                             var transaction = CreateTransaction(request, processed: true, "Transaction processed successfully.");
 
-                            transactions.Add(transaction);
+                            _transactions.Add(transaction);
 
                             return transaction; //CreatedAtAction
                         }
 
-                        return string.Format(
-                            $"You can't sell a stock you don't have in the wallet.",
-                            transactionStock.Amount,
-                            stock.Amount); //BadRequest
+                        return CreateTransaction(request, processed: false, "You can't sell a stock you don't have in the wallet."); //BadRequest
                     }
                 default:
-                    return $"Invalid transaction type ({request.Type})."; //BadRequest
+                    {
+                        return CreateTransaction(request, processed: false, $"Invalid transaction type ({request.Type})."); //BadRequest
+                    }
             }
         }
 
-        public IEnumerable<StockBase> GetWallet() => wallet;
+        public IEnumerable<StockBase> GetWallet() => _wallet;
 
-        public IEnumerable<Transaction> GetTransactions() => transactions;
+        public IEnumerable<Transaction> GetTransactions() => _transactions;
 
         private static Transaction CreateTransaction(TransactionRequest request, bool processed, string statusMessage) =>
             new()
