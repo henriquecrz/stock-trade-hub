@@ -27,7 +27,9 @@ namespace api.Controllers
         {
             _messageService.PublishMessage(transaction);
 
-            return Ok("Message published.");
+            _logger.LogInformation("Transaction request published.");
+
+            return Accepted("Message published.");
         }
 
         [HttpGet(Name = "GetWallet")]

@@ -28,6 +28,8 @@ namespace api.Services
 
         public bool Create(Stock stock)
         {
+            stock.Code = stock.Code.ToUpper();
+
             var exists = stocks.Any(s => s.Code == stock.Code);
 
             if (!exists)
