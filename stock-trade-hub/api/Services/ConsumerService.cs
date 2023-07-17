@@ -3,40 +3,61 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Channels;
+using Constants = api.Utils.Constants;
 
 namespace api.Services
 {
     public class ConsumerService : IHostedService, IDisposable
     {
         private readonly ConnectionFactory _connectionFactory;
-        private readonly string _queueName;
         private readonly ILogger<ConsumerService> _logger;
         private readonly ITransactionService _transactionService;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
         public ConsumerService(ILogger<ConsumerService> logger, ITransactionService transactionService)
         {
             _connectionFactory = new ConnectionFactory() { HostName = "localhost" };
-            _queueName = "transaction";
             _logger = logger;
             _transactionService = transactionService;
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
+            Task.Run(() => ConsumeMessages(_cancellationTokenSource.Token));
+
+            return Task.CompletedTask;
+        }
+
+        public Task StopAsync(CancellationToken cancellationToken)
+        {
+            _cancellationTokenSource.Cancel();
+
+            //_channel?.Close();
+            //_connection?.Close();
+
+            return Task.CompletedTask;
+        }
+
+        public void Dispose()
+        {
+            //_channel?.Dispose();
+            //_connection?.Dispose();
+        }
+
+        private void ConsumeMessages(CancellationToken cancellationToken)
+        {
             using var connection = _connectionFactory.CreateConnection();
             using var channel = connection.CreateModel();
 
-            channel.QueueDeclare(_queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            channel.QueueDeclare(Constants.QUEUE_NAME, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
             var consumer = new EventingBasicConsumer(channel);
 
             consumer.Received += (model, ea) =>
             {
-                if (cancellationToken.IsCancellationRequested)
-                {
-                    return;
-                }
-
                 try
                 {
                     var body = ea.Body.ToArray();
@@ -61,27 +82,13 @@ namespace api.Services
                 }
             };
 
-            channel.BasicConsume(_queueName, autoAck: false, consumer);
+            channel.BasicConsume(Constants.QUEUE_NAME, autoAck: false, consumer);
 
-            cancellationToken.WaitHandle.WaitOne();
-
-            return Task.CompletedTask;
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _consumer.Received -= OnMessageReceived;
-
-            _channel?.Close();
-            _connection?.Close();
-
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            _channel?.Dispose();
-            _connection?.Dispose();
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                // Aguarda um pequeno intervalo antes de verificar novamente se a tarefa foi cancelada
+                Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).Wait();
+            }
         }
     }
 }

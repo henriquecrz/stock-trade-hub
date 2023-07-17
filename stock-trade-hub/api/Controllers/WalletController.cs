@@ -9,23 +9,23 @@ namespace api.Controllers
     public class WalletController : ControllerBase
     {
         private readonly ILogger<WalletController> _logger;
-        private readonly IMessageService _messageService;
+        private readonly IPublisherService _publisherService;
         private readonly ITransactionService _transactionService;
 
         public WalletController(
             ILogger<WalletController> logger,
-            IMessageService messageService,
+            IPublisherService publisherService,
             ITransactionService transactionService)
         {
             _logger = logger;
-            _messageService = messageService;
+            _publisherService = publisherService;
             _transactionService = transactionService;
         }
 
         [HttpPost(Name = "CreateTransaction")]
         public ActionResult<Stock> Transact(TransactionRequest transaction)
         {
-            _messageService.PublishMessage(transaction);
+            _publisherService.PublishMessage(transaction);
 
             _logger.LogInformation("Transaction request published.");
 

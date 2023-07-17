@@ -2,7 +2,7 @@
 
 namespace api.Services
 {
-    public interface IMessageService
+    public interface IPublisherService
     {
         public void PublishMessage(TransactionRequest transaction);
     }

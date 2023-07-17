@@ -5,12 +5,12 @@ using System.Text.Json;
 
 namespace api.Services
 {
-    public class MessageService : IMessageService
+    public class PublisherService : IPublisherService
     {
-        private readonly ILogger<MessageService> _logger;
+        private readonly ILogger<PublisherService> _logger;
         private readonly ConnectionFactory _connectionFactory;
 
-        public MessageService(ILogger<MessageService> logger)
+        public PublisherService(ILogger<PublisherService> logger)
         {
             _logger = logger;
             _connectionFactory = new ConnectionFactory() { HostName = "localhost" };

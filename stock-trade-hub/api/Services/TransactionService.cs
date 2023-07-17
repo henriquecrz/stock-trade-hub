@@ -18,6 +18,11 @@ namespace api.Services
 
         public Transaction Transact(TransactionRequest request)
         {
+            if (!request.Stock.IsValid)
+            {
+
+            }
+
             var transactionStock = request.Stock;
             var stock = _stockService.Get(transactionStock.Code);
 
@@ -96,6 +101,18 @@ namespace api.Services
         public IEnumerable<StockBase> GetWallet() => _wallet;
 
         public IEnumerable<Transaction> GetTransactions() => _transactions;
+
+        //private static bool Validate(TransactionRequest request)
+        //{
+        //    var code = request.Stock.Code;
+
+        //    request.Stock.Code = code.ToUpper();
+
+        //    if (request.Stock.Amount <= 0)
+        //    {
+
+        //    }
+        //}
 
         private static Transaction CreateTransaction(TransactionRequest request, bool processed, string statusMessage) =>
             new()

@@ -3,7 +3,7 @@ using api.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddSingleton<IMessageService, MessageService>();
+builder.Services.AddSingleton<IPublisherService, PublisherService>();
 builder.Services.AddSingleton<IStockService, StockService>();
 builder.Services.AddSingleton<ITransactionService, TransactionService>();
 builder.Services.AddHostedService<ConsumerService>();
