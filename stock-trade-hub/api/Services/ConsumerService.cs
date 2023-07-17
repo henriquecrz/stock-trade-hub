@@ -3,8 +3,6 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Channels;
 using Constants = api.Utils.Constants;
 
 namespace api.Services
@@ -63,7 +61,7 @@ namespace api.Services
                     var body = ea.Body.ToArray();
                     var message = Encoding.UTF8.GetString(body);
 
-                    Console.WriteLine("Mensage received: {0}", message);
+                    _logger.LogInformation($"Message received: {message}");
 
                     var transaction = JsonSerializer.Deserialize<TransactionRequest>(message);
 

@@ -28,7 +28,7 @@ namespace api.Services
 
         public bool Create(Stock stock)
         {
-            stock.Code = stock.Code.ToUpper();
+            stock.Code = stock.Code.Trim().ToUpper();
 
             var exists = stocks.Any(s => s.Code == stock.Code);
 
@@ -44,7 +44,7 @@ namespace api.Services
 
         public IEnumerable<Stock> Get() => stocks;
 
-        public Stock? Get(string code) => stocks.FirstOrDefault(s => s.Code == code);
+        public Stock? Get(string code) => stocks.FirstOrDefault(s => s.Code == code.Trim().ToUpper());
 
         public bool Update(string code, Stock updatedStock)
         {

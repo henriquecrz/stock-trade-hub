@@ -18,17 +18,18 @@ namespace api.Services
 
         public Transaction Transact(TransactionRequest request)
         {
-            if (!request.Stock.IsValid)
-            {
-
-            }
-
             var transactionStock = request.Stock;
+
             var stock = _stockService.Get(transactionStock.Code);
 
             if (stock is null)
             {
                 return CreateTransaction(request, processed: false, $"Stock code {transactionStock.Code} does not exist."); //BadRequest
+            }
+
+            if (!transactionStock.IsValid)
+            {
+                return CreateTransaction(request, processed: false, $"The amount can not be {transactionStock.Amount}."); //BadRequest
             }
 
             switch (request.Type)
@@ -74,19 +75,24 @@ namespace api.Services
 
                         if (walletStock is not null)
                         {
-                            walletStock.Amount -= transactionStock.Amount;
-                            stock.Amount += transactionStock.Amount;
-
-                            if (walletStock.Amount == 0)
+                            if (transactionStock.Amount <= walletStock.Amount)
                             {
-                                _wallet.Remove(walletStock);
+                                walletStock.Amount -= transactionStock.Amount;
+                                stock.Amount += transactionStock.Amount;
+
+                                if (walletStock.Amount == 0)
+                                {
+                                    _wallet.Remove(walletStock);
+                                }
+
+                                var transaction = CreateTransaction(request, processed: true, "Transaction processed successfully.");
+
+                                _transactions.Add(transaction);
+
+                                return transaction; //CreatedAtAction
                             }
 
-                            var transaction = CreateTransaction(request, processed: true, "Transaction processed successfully.");
-
-                            _transactions.Add(transaction);
-
-                            return transaction; //CreatedAtAction
+                            return CreateTransaction(request, processed: false, "You can't sell a stock you don't have in the wallet."); //BadRequest
                         }
 
                         return CreateTransaction(request, processed: false, "You can't sell a stock you don't have in the wallet."); //BadRequest
@@ -101,18 +107,6 @@ namespace api.Services
         public IEnumerable<StockBase> GetWallet() => _wallet;
 
         public IEnumerable<Transaction> GetTransactions() => _transactions;
-
-        //private static bool Validate(TransactionRequest request)
-        //{
-        //    var code = request.Stock.Code;
-
-        //    request.Stock.Code = code.ToUpper();
-
-        //    if (request.Stock.Amount <= 0)
-        //    {
-
-        //    }
-        //}
 
         private static Transaction CreateTransaction(TransactionRequest request, bool processed, string statusMessage) =>
             new()

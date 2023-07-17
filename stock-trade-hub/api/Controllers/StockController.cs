@@ -36,7 +36,6 @@ namespace api.Controllers
         [HttpGet(Name = "GetStockByCode")]
         public ActionResult<Stock> GetByCode(string code)
         {
-            code = code.Trim().ToUpper();
             var stock = _stockService.Get(code);
 
             if (stock is not null)
@@ -50,8 +49,6 @@ namespace api.Controllers
         [HttpPut(Name = "UpdateStock")]
         public ActionResult<Stock> Update(string code, Stock updatedStock)
         {
-            code = code.Trim().ToUpper();
-
             var success = _stockService.Update(code, updatedStock);
 
             if (success)
@@ -65,8 +62,6 @@ namespace api.Controllers
         [HttpDelete(Name = "DeleteStock")]
         public ActionResult<Stock> Delete(string code)
         {
-            code = code.Trim().ToUpper();
-
             var success = _stockService.Remove(code);
 
             if (success)
