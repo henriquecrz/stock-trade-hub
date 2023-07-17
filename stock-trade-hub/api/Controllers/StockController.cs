@@ -47,7 +47,7 @@ namespace api.Controllers
         }
 
         [HttpPut(Name = "UpdateStock")]
-        public ActionResult<Stock> Update(string code, Stock updatedStock)
+        public ActionResult<Stock> Update(string code, StockUpdate updatedStock)
         {
             var success = _stockService.Update(code, updatedStock);
 

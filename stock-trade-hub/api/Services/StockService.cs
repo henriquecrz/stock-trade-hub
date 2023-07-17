@@ -46,7 +46,7 @@ namespace api.Services
 
         public Stock? Get(string code) => stocks.FirstOrDefault(s => s.Code == code.Trim().ToUpper());
 
-        public bool Update(string code, Stock updatedStock)
+        public bool Update(string code, StockUpdate updatedStock)
         {
             var stock = Get(code);
 
@@ -54,12 +54,12 @@ namespace api.Services
             {
                 if (updatedStock.Code is not null)
                 {
-                    stock.Code = updatedStock.Code;
+                    stock.Code = updatedStock.Code.Trim().ToLower();
                 }
 
                 if (updatedStock.Amount is not null)
                 {
-                    stock.Amount = updatedStock.Amount;
+                    stock.Amount = (int)updatedStock.Amount;
                 }
 
                 if (updatedStock.Price is not null)

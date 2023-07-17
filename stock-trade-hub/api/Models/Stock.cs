@@ -2,6 +2,6 @@
 {
     public class Stock : StockBase
     {
-        public required decimal? Price { get; set; }
+        public decimal? Price { get; set; }
     }
 }

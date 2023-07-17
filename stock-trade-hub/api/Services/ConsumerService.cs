@@ -54,11 +54,11 @@ namespace api.Services
 
                     _logger.LogInformation($"Message received: {message}");
 
-                    var transaction = JsonSerializer.Deserialize<TransactionRequest>(message);
+                    var transactionTemp = JsonSerializer.Deserialize<TransactionTemp>(message);
 
-                    if (transaction is not null)
+                    if (transactionTemp is not null)
                     {
-                        var result = _transactionService.Transact(transaction);
+                        var result = _transactionService.Transact(transactionTemp);
 
                         _logger.LogInformation(result.StatusMessage);
                     }

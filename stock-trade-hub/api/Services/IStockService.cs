@@ -10,7 +10,7 @@ namespace api.Services
 
         public Stock? Get(string code);
 
-        public bool Update(string code, Stock updatedStock);
+        public bool Update(string code, StockUpdate updatedStock);
 
         public bool Remove(string code);
     }

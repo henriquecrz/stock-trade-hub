@@ -4,7 +4,7 @@ namespace api.Services
 {
     public interface ITransactionService
     {
-        public Transaction Transact(TransactionRequest transaction);
+        public Transaction Transact(TransactionTemp transaction);
 
         public Wallet GetWallet();
 
