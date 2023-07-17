@@ -6,7 +6,7 @@ namespace api.Services
     {
         public Transaction Transact(TransactionRequest transaction);
 
-        public IEnumerable<StockBase> GetWallet();
+        public Wallet GetWallet();
 
         public IEnumerable<Transaction> GetTransactions();
     }

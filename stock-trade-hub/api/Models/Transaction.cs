@@ -4,7 +4,9 @@
     {
         public required string? Id { get; set; }
 
-        public required TransactionRequest Request { get; set; }
+        public required Stock Stock { get; set; }
+
+        public required TransactionType Type { get; set; }
 
         public required DateTime Date { get; set; }
 

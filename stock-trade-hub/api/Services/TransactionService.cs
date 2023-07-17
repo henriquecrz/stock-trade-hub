@@ -20,6 +20,8 @@ namespace api.Services
         {
             var transactionStock = request.Stock;
 
+            transactionStock.Code = transactionStock.Code.Trim().ToUpper();
+
             var stock = _stockService.Get(transactionStock.Code);
 
             if (stock is null)
@@ -51,8 +53,9 @@ namespace api.Services
                             else
                             {
                                 walletStock.Amount += transactionStock.Amount;
-                                stock.Amount -= transactionStock.Amount;
                             }
+
+                            stock.Amount -= transactionStock.Amount;
 
                             var transaction = CreateTransaction(request, processed: true, "Transaction processed successfully.");
 
@@ -65,7 +68,7 @@ namespace api.Services
                             request,
                             processed: false,
                             string.Format(
-                                $"The number of stocks to be bought (0) is greater than the available (1).",
+                                "The number of stocks to be bought ({0}) is greater than the available ({1}).",
                                 transactionStock.Amount,
                                 stock.Amount)); //BadRequest
                     }
@@ -104,18 +107,53 @@ namespace api.Services
             }
         }
 
-        public IEnumerable<StockBase> GetWallet() => _wallet;
+        public Wallet GetWallet()
+        {
+            var stocks = _wallet.Select(walletStock =>
+            {
+                var stock = _stockService.Get(walletStock.Code);
+                var amount = walletStock.Amount;
+                var price = stock?.Price;
+
+                return new StockTotal()
+                {
+                    Code = walletStock.Code,
+                    Amount = amount,
+                    Price = price,
+                    Total = amount * price
+                };
+            });
+            var total = stocks.Aggregate((decimal)0, (acc, entry) => acc + entry.Total ?? default);
+
+            var wallet = new Wallet()
+            {
+                Total = total,
+                Stocks = stocks
+            };
+
+            return wallet;
+        }
 
         public IEnumerable<Transaction> GetTransactions() => _transactions;
 
-        private static Transaction CreateTransaction(TransactionRequest request, bool processed, string statusMessage) =>
-            new()
+        private Transaction CreateTransaction(TransactionRequest request, bool processed, string statusMessage)
+        {
+            var stock = _stockService.Get(request.Stock.Code);
+
+            return new()
             {
                 Id = Guid.NewGuid().ToString(),
-                Request = request,
+                Stock = new Stock()
+                {
+                    Code = request.Stock.Code,
+                    Amount = request.Stock.Amount,
+                    Price = stock?.Price
+                },
+                Type = request.Type,
                 Date = DateTime.UtcNow,
                 Processed = processed,
                 StatusMessage = statusMessage
             };
+        }
     }
 }

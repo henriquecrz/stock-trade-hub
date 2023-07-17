@@ -6,7 +6,7 @@ namespace api.Models
     {
         public required string Code { get; set; }
 
-        public required int Amount { get; set; }
+        public required int? Amount { get; set; }
 
         [JsonIgnore]
         public bool IsValid => Amount > 0;

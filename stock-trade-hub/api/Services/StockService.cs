@@ -52,8 +52,20 @@ namespace api.Services
 
             if (stock is not null)
             {
-                stock.Amount = updatedStock.Amount;
-                stock.Price = updatedStock.Price;
+                if (updatedStock.Code is not null)
+                {
+                    stock.Code = updatedStock.Code;
+                }
+
+                if (updatedStock.Amount is not null)
+                {
+                    stock.Amount = updatedStock.Amount;
+                }
+
+                if (updatedStock.Price is not null)
+                {
+                    stock.Price = updatedStock.Price;
+                }
 
                 return true;
             }

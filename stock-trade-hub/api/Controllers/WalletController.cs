@@ -33,7 +33,7 @@ namespace api.Controllers
         }
 
         [HttpGet(Name = "GetWallet")]
-        public IEnumerable<StockBase> GetWallet() => _transactionService.GetWallet();
+        public Wallet GetWallet() => _transactionService.GetWallet();
 
         [HttpGet(Name = "GetTransactions")]
         public IEnumerable<Transaction> GetTransactions() => _transactionService.GetTransactions();

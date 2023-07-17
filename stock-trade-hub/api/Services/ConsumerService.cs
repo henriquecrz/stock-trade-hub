@@ -7,7 +7,7 @@ using Constants = api.Utils.Constants;
 
 namespace api.Services
 {
-    public class ConsumerService : IHostedService, IDisposable
+    public class ConsumerService : IHostedService
     {
         private readonly ConnectionFactory _connectionFactory;
         private readonly ILogger<ConsumerService> _logger;
@@ -24,7 +24,7 @@ namespace api.Services
 
         public Task StartAsync(CancellationToken cancellationToken)
         {
-            Task.Run(() => ConsumeMessages(_cancellationTokenSource.Token));
+            Task.Run(() => ConsumeMessages(_cancellationTokenSource.Token), cancellationToken);
 
             return Task.CompletedTask;
         }
@@ -33,16 +33,7 @@ namespace api.Services
         {
             _cancellationTokenSource.Cancel();
 
-            //_channel?.Close();
-            //_connection?.Close();
-
             return Task.CompletedTask;
-        }
-
-        public void Dispose()
-        {
-            //_channel?.Dispose();
-            //_connection?.Dispose();
         }
 
         private void ConsumeMessages(CancellationToken cancellationToken)
@@ -84,8 +75,7 @@ namespace api.Services
 
             while (!cancellationToken.IsCancellationRequested)
             {
-                // Aguarda um pequeno intervalo antes de verificar novamente se a tarefa foi cancelada
-                Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).Wait();
+                Task.Delay(TimeSpan.FromSeconds(1), cancellationToken).Wait(cancellationToken);
             }
         }
     }
