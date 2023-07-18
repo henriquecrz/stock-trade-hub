@@ -10,7 +10,7 @@ Criação de uma lista em memória que salva todas as requisições de transaç�
 
 ## Rotas
 
-Para mais detalhes consulte o Swagger disponível em https://localhost:44365/swagger/index.html.
+Para mais detalhes execute a aplicação e consulte o Swagger.
 
 ### Ativos
 
@@ -30,10 +30,10 @@ Para mais detalhes consulte o Swagger disponível em https://localhost:44365/swa
 - GET /Stock/Get: Retorna todos os ativos
 
 - GET /Stock/GetByCode: Retorna o ativo a partir de um determinado código
-  - Deve informar o parâmetro "code", que é o identificador único do ativo
+  - Deve informar o parâmetro "code" de um ativo existente
 
 - PUT /Stock/Update: Atualiza os dados de um determinado ativo
-  - Deve informar o parâmetro "code", que é o identificador único do ativo
+  - Deve informar o parâmetro "code" de um ativo existente
   - A propriedade "code" deve possuir pelo menos 1 caracter
   - A propriedade "amount" deve ser maior ou igual a 0 (zero)
   - A propriedade "price" deve ser maior que 0 (zero)
@@ -47,11 +47,28 @@ Para mais detalhes consulte o Swagger disponível em https://localhost:44365/swa
 ```
 
 - DELETE /Stock/Delete: Deleta o ativo a partir de um determinado código
-  - Deve informar o parâmetro "code", que é o identificador único do ativo
+  - Deve informar o parâmetro "code" de um ativo existente
 
 ### Carteira
 
+- POST /Wallet/Transact: Realiza uma transação de compra ou venda de um tipo de ativo
+  - A propriedade "code" deve ser de um ativo existente
+  - A propriedade "amount" deve ser maior que 0 (zero)
+  - A propriedade "type" deve ser 0 para Comprar ou 1 para Vender
 
+```json
+{
+  "stock": {
+    "code": string,
+    "amount": int
+  },
+  "type": int
+}
+```
+
+- GET /Wallet/GetWallet: Retorna um resumo da carteira
+
+- GET /Wallet/GetTransactions: Retorna todas as transações realizadas
 
 ## Tecnologias
 
@@ -68,11 +85,12 @@ Para mais detalhes consulte o Swagger disponível em https://localhost:44365/swa
 
 ## Instruções
 
-- Instalar Docker na máquina: https://www.docker.com/products/docker-desktop
-- Baixar a imagem do MySQL do Docker Hub: docker pull mysql
-- Executar a instância de banco de dados MySQL: docker run --name mysql-container -e MYSQL_ROOT_PASSWORD=a -e MYSQL_DATABASE=cashflow -p 3306:3306 -d mysql
-- No path raiz executar o comando: EntityFrameworkCore\Update-Database
-- Navegar até o path cash-flow/api/ e executar o comando: dotnet build
-- No mesmo path executar: dotnet run
-- Acessar Swagger: http://localhost:5129/swagger/index.html
-- Para rodar os testes: dotnet test
+- Instalar Docker na máquina: <https://www.docker.com/products/docker-desktop>
+- Baixar a imagem do RabbitMQ do Docker Hub: ```docker pull rabbitmq:latest```
+- Executar a instância do RabbitMQ: ```docker run -d --hostname rabbitserver --name rabbitmq-server -p 15672:15672 -p 5672:5672 rabbitmq:3-management```
+- Navegar até o path stock-trade-hub/api/ e executar os comandos:
+  - ```dotnet restore```
+  - ```dotnet build```
+  - ```dotnet run```
+- Acessar Swagger: <http://localhost:5129/swagger/index.html>
+- Para rodar os testes: ```dotnet test```
