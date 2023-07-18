@@ -24,7 +24,7 @@ jobs:
       run: dotnet restore
       working-directory: ./stock-trade-hub
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build
       working-directory: ./stock-trade-hub
     - name: Test
       run: dotnet test
