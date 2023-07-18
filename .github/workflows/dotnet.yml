@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v3
@@ -24,8 +24,8 @@ jobs:
       run: dotnet restore
       working-directory: ./stock-trade-hub
     - name: Build
-      run: dotnet build
+      run: dotnet build --no-restore
       working-directory: ./stock-trade-hub
     - name: Test
-      run: dotnet test
+      run: dotnet test --no-build --verbosity normal
       working-directory: ./stock-trade-hub
