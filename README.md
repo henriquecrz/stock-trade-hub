@@ -10,9 +10,11 @@ Criação de uma lista em memória que salva todas as requisições de transaç�
 
 ## Rotas
 
-- Ativos
-  - POST /Stock/Create
-    - ```json{
+### Ativos
+
+- POST /Stock/Create
+
+```json{
   "code": "string",
   "amount": 0,
   "price": 0
