@@ -27,7 +27,7 @@ namespace api.Controllers
                 return CreatedAtAction(nameof(Get), new { stock.Code }, stock);
             }
 
-            return BadRequest($"Stock code {stock.Code} already exists.");
+            return BadRequest($"Stock code {stock.Code} already exists or it is invalid.");
         }
 
         [HttpGet(Name = "GetStocks")]
@@ -36,6 +36,8 @@ namespace api.Controllers
         [HttpGet(Name = "GetStockByCode")]
         public ActionResult<Stock> GetByCode(string code)
         {
+            code = code.Trim().ToUpper();
+
             var stock = _stockService.Get(code);
 
             if (stock is not null)
@@ -49,6 +51,8 @@ namespace api.Controllers
         [HttpPut(Name = "UpdateStock")]
         public ActionResult<Stock> Update(string code, StockUpdate updatedStock)
         {
+            code = code.Trim().ToUpper();
+
             var success = _stockService.Update(code, updatedStock);
 
             if (success)
@@ -62,6 +66,8 @@ namespace api.Controllers
         [HttpDelete(Name = "DeleteStock")]
         public ActionResult<Stock> Delete(string code)
         {
+            code = code.Trim().ToUpper();
+
             var success = _stockService.Remove(code);
 
             if (success)

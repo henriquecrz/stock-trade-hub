@@ -21,9 +21,6 @@ namespace api.Services
         public Transaction Transact(TransactionTemp transactionTemp)
         {
             var transactionStock = transactionTemp.Stock;
-
-            transactionStock.Code = transactionStock.Code.Trim().ToUpper();
-
             var stock = _stockService.Get(transactionStock.Code);
 
             if (stock is null)
@@ -69,13 +66,11 @@ namespace api.Services
             });
             var total = stocks.Aggregate((decimal)0, (acc, entry) => acc + entry.Total ?? default);
 
-            var wallet = new Wallet()
+            return new Wallet()
             {
                 Total = total,
                 Stocks = stocks
             };
-
-            return wallet;
         }
 
         public IEnumerable<Transaction> GetTransactions() => _transactions;
@@ -102,7 +97,6 @@ namespace api.Services
                 }
 
                 stock.Amount -= transactionStock.Amount;
-
                 transactionTemp2.Processed = true;
 
                 var processed = CreateTransaction(transactionTemp, processed: true, "Transaction processed successfully.");

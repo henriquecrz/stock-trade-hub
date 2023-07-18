@@ -32,7 +32,7 @@ namespace api.Services
 
             var exists = stocks.Any(s => s.Code == stock.Code);
 
-            if (!exists)
+            if (!exists && stock.IsValid)
             {
                 stocks.Add(stock);
 
@@ -44,7 +44,7 @@ namespace api.Services
 
         public IEnumerable<Stock> Get() => stocks;
 
-        public Stock? Get(string code) => stocks.FirstOrDefault(s => s.Code == code.Trim().ToUpper());
+        public Stock? Get(string code) => stocks.FirstOrDefault(s => s.Code == code);
 
         public bool Update(string code, StockUpdate updatedStock)
         {
@@ -52,17 +52,17 @@ namespace api.Services
 
             if (stock is not null)
             {
-                if (updatedStock.Code is not null)
+                if (updatedStock.Code is not null && updatedStock.Code.Length > 0)
                 {
-                    stock.Code = updatedStock.Code.Trim().ToLower();
+                    stock.Code = updatedStock.Code.Trim().ToUpper();
                 }
 
-                if (updatedStock.Amount is not null)
+                if (updatedStock.Amount is not null && updatedStock.Amount >= 0)
                 {
                     stock.Amount = (int)updatedStock.Amount;
                 }
 
-                if (updatedStock.Price is not null)
+                if (updatedStock.Price is not null && updatedStock.Price > 0)
                 {
                     stock.Price = updatedStock.Price;
                 }

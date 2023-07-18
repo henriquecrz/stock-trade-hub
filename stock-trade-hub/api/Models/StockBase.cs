@@ -9,6 +9,6 @@ namespace api.Models
         public required int Amount { get; set; }
 
         [JsonIgnore]
-        public bool IsValid => Amount > 0;
+        public virtual bool IsValid => Amount > 0;
     }
 }

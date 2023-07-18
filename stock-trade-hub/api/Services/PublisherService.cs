@@ -23,6 +23,8 @@ namespace api.Services
             using var connection = _connectionFactory.CreateConnection();
             using var channel = connection.CreateModel();
 
+            request.Stock.Code = request.Stock.Code.Trim().ToUpper();
+
             var transaction = new TransactionTemp()
             {
                 Id = Guid.NewGuid().ToString(),
