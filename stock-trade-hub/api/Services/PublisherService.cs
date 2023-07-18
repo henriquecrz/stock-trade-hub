@@ -14,7 +14,7 @@ namespace api.Services
         public PublisherService(ILogger<PublisherService> logger)
         {
             _logger = logger;
-            _connectionFactory = new ConnectionFactory() { HostName = "localhost" };
+            _connectionFactory = new ConnectionFactory() { HostName = "host.docker.internal" };
             _transactions = new();
         }
 
