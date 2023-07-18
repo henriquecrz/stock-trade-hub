@@ -16,7 +16,7 @@ namespace api.Services
 
         public ConsumerService(ILogger<ConsumerService> logger, ITransactionService transactionService)
         {
-            _connectionFactory = new ConnectionFactory() { HostName = "localhost" };
+            _connectionFactory = new ConnectionFactory() { HostName = "host.docker.internal" };
             _logger = logger;
             _transactionService = transactionService;
             _cancellationTokenSource = new CancellationTokenSource();
