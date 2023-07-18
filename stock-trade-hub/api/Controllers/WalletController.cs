@@ -23,9 +23,9 @@ namespace api.Controllers
         }
 
         [HttpPost(Name = "CreateTransaction")]
-        public ActionResult<Stock> Transact(TransactionRequest transaction)
+        public ActionResult Transact(TransactionRequest request)
         {
-            _publisherService.PublishMessage(transaction);
+            _publisherService.PublishMessage(request);
 
             _logger.LogInformation("Transaction request published.");
 
