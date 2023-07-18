@@ -6,7 +6,7 @@ Desenvolvimento de uma API escrita em C# (.NET) que faz o controle de ativos e t
 
 ## Estratégia de Idempotência
 
-Criação de uma lista em memória que salva todas as requisições de transações, assim, antes de realizar efetivamente a transação, verifica-se através do identificador único e status se a requisição em questão já foi processada ou não.
+Criação de uma lista em memória que salva todas as requisições de transações, assim, antes de realizar efetivamente a transação, verifica-se através do identificador único e do status se a requisição em questão já foi processada ou não.
 
 ## Rotas
 
@@ -82,6 +82,8 @@ Para mais detalhes execute a aplicação e consulte o Swagger.
 - Swagger
 - HostedService
   - Serviço consumidor da fila RabbitMQ
+- GitHub Actions
+  - Sempre que a branch "main" recebe algum código novo o CI é acionado, executando o build da aplicação e os testes
 
 ## Instruções
 
@@ -92,5 +94,5 @@ Para mais detalhes execute a aplicação e consulte o Swagger.
   - ```dotnet restore```
   - ```dotnet build```
   - ```dotnet run```
-- Acessar Swagger: <http://localhost:5129/swagger/index.html>
+- Acessar Swagger: <http://localhost:5041/swagger/index.html>
 - Para rodar os testes: ```dotnet test```
