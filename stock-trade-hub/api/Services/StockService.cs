@@ -4,7 +4,7 @@ namespace api.Services
 {
     public class StockService : IStockService
     {
-        private static readonly List<Stock> stocks = new()
+        private readonly List<Stock> _stocks = new()
         {
             new Stock
             {
@@ -30,11 +30,11 @@ namespace api.Services
         {
             stock.Code = stock.Code.Trim().ToUpper();
 
-            var exists = stocks.Any(s => s.Code == stock.Code);
+            var exists = _stocks.Any(s => s.Code == stock.Code);
 
             if (!exists && stock.IsValid)
             {
-                stocks.Add(stock);
+                _stocks.Add(stock);
 
                 return true;
             }
@@ -42,9 +42,9 @@ namespace api.Services
             return false;
         }
 
-        public IEnumerable<Stock> Get() => stocks;
+        public IEnumerable<Stock> Get() => _stocks;
 
-        public Stock? Get(string code) => stocks.FirstOrDefault(s => s.Code == code);
+        public Stock? Get(string code) => _stocks.FirstOrDefault(s => s.Code == code);
 
         public bool Update(string code, StockUpdate updatedStock)
         {
@@ -79,7 +79,7 @@ namespace api.Services
 
             if (stock is not null)
             {
-                stocks.Remove(stock);
+                _stocks.Remove(stock);
 
                 return true;
             }
